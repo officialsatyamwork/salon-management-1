@@ -3,11 +3,11 @@ import { createContext, useContext, useEffect, useState } from 'react'
 const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem('velura-theme') || 'dark')
+  const [theme, setTheme] = useState(() => localStorage.getItem('keeng-theme') || 'dark')
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('velura-theme', theme)
+    localStorage.setItem('keeng-theme', theme)
   }, [theme])
 
   const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark')

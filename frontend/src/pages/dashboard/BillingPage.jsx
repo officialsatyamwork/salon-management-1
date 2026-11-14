@@ -57,10 +57,10 @@ export default function BillingPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-2 sm:gap-3">
         {['pos', 'invoices'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${tab === t ? 'bg-violet-600 text-white' : 'glass text-gray-400 hover:text-white'}`}>
+            className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${tab === t ? 'bg-violet-600 text-white' : 'glass text-fg-2 hover:text-fg'}`}>
             {t === 'pos' ? 'New Invoice / POS' : 'Invoice History'}
           </button>
         ))}
@@ -71,14 +71,14 @@ export default function BillingPage() {
           {/* Services */}
           <div className="lg:col-span-2 space-y-4">
             <div className="glass rounded-2xl p-5">
-              <h3 className="font-bold text-white mb-4">Select Services</h3>
+              <h3 className="font-bold text-fg mb-4">Select Services</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {servicesList.map(s => (
                   <button key={s.id} onClick={() => addToCart(s)}
                     className="glass rounded-xl p-3 text-left hover:border-violet-500/40 transition-all group">
                     <p className="text-xs text-violet-400 mb-1">{s.category}</p>
-                    <p className="font-medium text-white text-sm">{s.name}</p>
-                    <p className="text-gray-400 text-sm">₹{s.price}</p>
+                    <p className="font-medium text-fg text-sm">{s.name}</p>
+                    <p className="text-fg-2 text-sm">₹{s.price}</p>
                   </button>
                 ))}
               </div>
@@ -87,28 +87,28 @@ export default function BillingPage() {
 
           {/* Cart */}
           <div className="glass rounded-2xl p-5 flex flex-col gap-4">
-            <h3 className="font-bold text-white">Invoice</h3>
+            <h3 className="font-bold text-fg">Invoice</h3>
 
             <div>
-              <label className="text-sm text-gray-400 block mb-1">Customer Name</label>
+              <label className="text-sm text-fg-2 block mb-1">Customer Name</label>
               <input value={customer} onChange={e => setCustomer(e.target.value)}
                 placeholder="Enter customer name"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-violet-500" />
+                className="w-full bg-fg/5 border border-line rounded-xl px-4 py-2.5 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-violet-500" />
             </div>
 
             <div className="flex-1 min-h-32">
               {cart.length === 0 ? (
-                <p className="text-gray-600 text-sm text-center py-8">Add services to invoice</p>
+                <p className="text-fg-muted text-sm text-center py-8">Add services to invoice</p>
               ) : (
                 <div className="space-y-2">
                   {cart.map(item => (
-                    <div key={item.id} className="flex items-center justify-between py-2 border-b border-white/5">
+                    <div key={item.id} className="flex items-center justify-between py-2 border-b border-line">
                       <div>
-                        <p className="text-white text-sm font-medium">{item.name}</p>
-                        <p className="text-gray-500 text-xs">₹{item.price} × {item.qty}</p>
+                        <p className="text-fg text-sm font-medium">{item.name}</p>
+                        <p className="text-fg-muted text-xs">₹{item.price} × {item.qty}</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-white text-sm font-semibold">₹{item.price * item.qty}</span>
+                        <span className="text-fg text-sm font-semibold">₹{item.price * item.qty}</span>
                         <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-300">
                           <Trash2 size={14} />
                         </button>
@@ -120,13 +120,13 @@ export default function BillingPage() {
             </div>
 
             <div>
-              <label className="text-sm text-gray-400 block mb-1">Discount (%)</label>
+              <label className="text-sm text-fg-2 block mb-1">Discount (%)</label>
               <input type="number" min="0" max="100" value={discount} onChange={e => setDiscount(Number(e.target.value))}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-violet-500" />
+                className="w-full bg-fg/5 border border-line rounded-xl px-4 py-2 text-fg text-sm focus:outline-none focus:border-violet-500" />
             </div>
 
-            <div className="space-y-1 text-sm border-t border-white/10 pt-3">
-              <div className="flex justify-between text-gray-400">
+            <div className="space-y-1 text-sm border-t border-line pt-3">
+              <div className="flex justify-between text-fg-2">
                 <span>Subtotal</span><span>₹{subtotal.toLocaleString()}</span>
               </div>
               {discount > 0 && (
@@ -134,20 +134,20 @@ export default function BillingPage() {
                   <span>Discount ({discount}%)</span><span>-₹{discountAmt}</span>
                 </div>
               )}
-              <div className="flex justify-between text-gray-400">
+              <div className="flex justify-between text-fg-2">
                 <span>GST (18%)</span><span>₹{gst}</span>
               </div>
-              <div className="flex justify-between text-white font-bold text-base pt-1 border-t border-white/10">
+              <div className="flex justify-between text-fg font-bold text-base pt-1 border-t border-line">
                 <span>Total</span><span>₹{total.toLocaleString()}</span>
               </div>
             </div>
 
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Payment Method</label>
+              <label className="text-sm text-fg-2 block mb-2">Payment Method</label>
               <div className="grid grid-cols-3 gap-2">
                 {['cash', 'upi', 'card'].map(m => (
                   <button key={m} onClick={() => setPayMethod(m)}
-                    className={`py-2 rounded-xl text-sm font-medium capitalize transition-all ${payMethod === m ? 'bg-violet-600 text-white' : 'glass text-gray-400'}`}>
+                    className={`py-2 rounded-xl text-sm font-medium capitalize transition-all ${payMethod === m ? 'bg-violet-600 text-white' : 'glass text-fg-2'}`}>
                     {m.toUpperCase()}
                   </button>
                 ))}
@@ -156,7 +156,7 @@ export default function BillingPage() {
 
             <button onClick={handleCheckout}
               disabled={!cart.length || !customer.trim()}
-              className={`w-full py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${cart.length && customer.trim() ? 'bg-violet-600 hover:bg-violet-700 text-white' : 'bg-white/5 text-gray-600 cursor-not-allowed'}`}>
+              className={`w-full py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${cart.length && customer.trim() ? 'bg-violet-600 hover:bg-violet-700 text-white' : 'bg-fg/5 text-fg-muted cursor-not-allowed'}`}>
               {success ? <><Check size={16} /> Invoice Generated!</> : 'Generate Invoice'}
             </button>
           </div>
@@ -164,10 +164,10 @@ export default function BillingPage() {
       )}
 
       {tab === 'invoices' && (
-        <div className="glass rounded-2xl overflow-hidden">
-          <table className="w-full">
+        <div className="glass rounded-2xl overflow-x-auto">
+          <table className="w-full min-w-[640px] whitespace-nowrap">
             <thead>
-              <tr className="border-b border-white/8 text-left text-xs text-gray-500 uppercase tracking-wider">
+              <tr className="border-b border-line text-left text-xs text-fg-muted uppercase tracking-wider">
                 <th className="px-6 py-4">Invoice ID</th>
                 <th className="px-6 py-4">Customer</th>
                 <th className="px-6 py-4">Amount</th>
@@ -176,14 +176,14 @@ export default function BillingPage() {
                 <th className="px-6 py-4">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-line">
               {recentInvoices.map(inv => (
-                <tr key={inv.id} className="hover:bg-white/2 transition-colors">
+                <tr key={inv.id} className="hover:bg-fg/[0.03] transition-colors">
                   <td className="px-6 py-4 text-violet-400 text-sm font-medium">{inv.id}</td>
-                  <td className="px-6 py-4 text-white text-sm">{inv.customer}</td>
-                  <td className="px-6 py-4 text-white text-sm font-semibold">₹{inv.amount.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-gray-400 text-sm">{inv.date}</td>
-                  <td className="px-6 py-4 text-gray-400 text-sm uppercase">{inv.method}</td>
+                  <td className="px-6 py-4 text-fg text-sm">{inv.customer}</td>
+                  <td className="px-6 py-4 text-fg text-sm font-semibold">₹{inv.amount.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-fg-2 text-sm">{inv.date}</td>
+                  <td className="px-6 py-4 text-fg-2 text-sm uppercase">{inv.method}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${inv.status === 'paid' ? 'bg-green-500/15 text-green-400' : 'bg-yellow-500/15 text-yellow-400'}`}>
                       {inv.status}

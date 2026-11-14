@@ -1,9 +1,10 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
   Calendar, Users, CreditCard, BarChart3, Package, Star,
   Bell, GitBranch, ArrowRight, Check, ChevronDown, Zap,
-  Shield, Globe, TrendingUp, Clock, Smartphone
+  Shield, Globe, TrendingUp, Clock, Smartphone, MessageSquare
 } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
@@ -56,7 +57,7 @@ const plans = [
 ]
 
 const testimonials = [
-  { name: 'Priya Sharma', role: 'Owner, Glow Salon, Mumbai', text: 'Velura transformed how we manage our 3 branches. Appointments, billing, and staff — all in one place. Revenue up 35% in 3 months.' },
+  { name: 'Priya Sharma', role: 'Owner, Glow Salon, Mumbai', text: 'Keeng transformed how we manage our 3 branches. Appointments, billing, and staff — all in one place. Revenue up 35% in 3 months.' },
   { name: 'Rahul Mehta', role: 'Manager, Zen Spa, Bangalore', text: 'The automated reminders alone reduced our no-shows by 60%. The dashboard is beautiful and incredibly easy to use.' },
   { name: 'Anita Nair', role: 'Owner, Aura Wellness, Chennai', text: 'Finally a software that understands the beauty industry. The loyalty program has brought back so many customers.' },
 ]
@@ -64,7 +65,7 @@ const testimonials = [
 const faqs = [
   { q: 'Is there a free trial?', a: 'Yes, all plans come with a 14-day free trial. No credit card required.' },
   { q: 'Can I manage multiple branches?', a: 'Yes, our Growth and Enterprise plans support multiple branches with centralized management.' },
-  { q: 'Does it support GST billing?', a: 'Yes, Velura is fully GST-compliant with automatic tax calculation and invoice generation.' },
+  { q: 'Does it support GST billing?', a: 'Yes, Keeng is fully GST-compliant with automatic tax calculation and invoice generation.' },
   { q: 'Is my data secure?', a: 'Absolutely. We use enterprise-grade encryption and each business has completely isolated data.' },
   { q: 'Can customers book online?', a: 'Yes, customers get a branded booking page to schedule appointments 24/7.' },
 ]
@@ -79,6 +80,7 @@ const benefits = [
 ]
 
 export default function LandingPage() {
+  const [openFaq, setOpenFaq] = useState(null)
   return (
     <div className="min-h-screen overflow-x-hidden" style={{ background: 'var(--bg)', color: 'var(--text-primary)', transition: 'background 0.3s, color 0.3s' }}>
       <Navbar />
@@ -174,7 +176,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
             <h2 className="text-4xl font-black mb-8" style={{ color: 'var(--text-primary)' }}>
-              Why Businesses <span className="gradient-text">Choose Velura</span>
+              Why Businesses <span className="gradient-text">Choose Keeng</span>
             </h2>
             <div className="space-y-5">
               {benefits.map(b => (
@@ -305,23 +307,85 @@ export default function LandingPage() {
       {/* FAQ */}
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-16">
-            <h2 className="text-4xl font-black mb-4" style={{ color: 'var(--text-primary)' }}>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-14">
+            <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--brand)' }}>FAQ</span>
+            <h2 className="text-4xl font-black mt-3 mb-3" style={{ color: 'var(--text-primary)' }}>
               Frequently Asked <span className="gradient-text">Questions</span>
             </h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Everything you need to know before getting started.</p>
           </motion.div>
-          <div className="space-y-4">
-            {faqs.map((faq, i) => (
-              <motion.div key={faq.q} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }} className="card p-5">
-                <div className="flex justify-between items-start gap-4">
-                  <h4 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{faq.q}</h4>
-                  <ChevronDown size={18} style={{ color: 'var(--text-muted)', flexShrink: 0, marginTop: 2 }} />
-                </div>
-                <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{faq.a}</p>
-              </motion.div>
-            ))}
+
+          <div className="space-y-3">
+            {faqs.map((faq, i) => {
+              const isOpen = openFaq === i
+              return (
+                <motion.div
+                  key={faq.q}
+                  variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                  className="card overflow-hidden"
+                  style={{ borderColor: isOpen ? 'var(--border-brand)' : 'var(--card-border)' }}
+                >
+                  <button
+                    className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                  >
+                    <span className="font-semibold text-sm leading-snug" style={{ color: 'var(--text-primary)' }}>
+                      {faq.q}
+                    </span>
+                    <motion.div
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                      className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
+                      style={{ background: isOpen ? 'var(--brand-soft)' : 'var(--surface)' }}
+                    >
+                      <ChevronDown size={15} style={{ color: isOpen ? 'var(--brand)' : 'var(--text-muted)' }} />
+                    </motion.div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <p
+                          className="px-6 pb-5 text-sm leading-relaxed"
+                          style={{ color: 'var(--text-secondary)', borderTop: '1px solid var(--border)' }}
+                        >
+                          {faq.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )
+            })}
           </div>
+
+          {/* Still have questions */}
+          <motion.div
+            variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+            className="mt-10 p-6 rounded-2xl text-center"
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--border)' }}
+          >
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ background: 'var(--brand-soft)' }}>
+              <MessageSquare size={18} style={{ color: 'var(--brand)' }} />
+            </div>
+            <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Still have questions?</p>
+            <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+              Can't find the answer you're looking for? Chat with our friendly team.
+            </p>
+            <a
+              href="mailto:hello@keeng.in"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold btn-primary text-white"
+            >
+              Get in touch <ArrowRight size={14} />
+            </a>
+          </motion.div>
         </div>
       </section>
 
@@ -334,7 +398,7 @@ export default function LandingPage() {
               Ready to <span className="gradient-text">Transform</span> Your Business?
             </h2>
             <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-              Join 10,000+ businesses already using Velura. Start your free 14-day trial today.
+              Join 10,000+ businesses already using Keeng. Start your free 14-day trial today.
             </p>
             <Link to="/register"
               className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-semibold text-lg btn-primary text-white">

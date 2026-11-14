@@ -1,22 +1,42 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Building2, Bell, Lock, Globe, Palette } from 'lucide-react'
+import { Save, Building2, Bell, Lock, GitBranch } from 'lucide-react'
+import { useScope } from '../../store/auth'
+import { usePlatform } from '../../store/platform'
+import { Toggle } from '../../components/ui/Modal'
+import { BIZ_TYPES } from '../../data/seed'
 
-const tabs = [
-  { id: 'business', label: 'Business Profile', icon: Building2 },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'security', label: 'Security', icon: Lock },
-]
+const inputCls = 'w-full bg-fg/5 border border-line rounded-xl px-4 py-2.5 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-violet-500 transition-colors'
+
+const TABS = {
+  business: { label: 'Business Profile', icon: Building2 },
+  branch: { label: 'Branch Settings', icon: GitBranch },
+  notifications: { label: 'Notifications', icon: Bell },
+  security: { label: 'Security', icon: Lock },
+}
 
 export default function SettingsPage() {
-  const [tab, setTab] = useState('business')
+  const { user, business, branches } = useScope()
+  const updateBusiness = usePlatform(s => s.updateBusiness)
+  const updateBranch = usePlatform(s => s.updateBranch)
+  const branch = branches[0]
+
+  const tabs = [
+    user.role === 'owner' && 'business',
+    user.role === 'manager' && branch && 'branch',
+    'notifications', 'security',
+  ].filter(Boolean)
+  const [tab, setTab] = useState(tabs[0])
   const [saved, setSaved] = useState(false)
 
-  const [business, setBusiness] = useState({
-    name: 'Glow Salon', type: 'Salon', email: 'owner@glowsalon.com',
-    phone: '9876500000', address: '12, Link Road, Andheri West, Mumbai',
-    gst: '27AABCU9603R1ZX', currency: 'INR', timezone: 'Asia/Kolkata',
-  })
+  const [profile, setProfile] = useState(() => business ? {
+    name: business.name, type: business.type, ownerName: business.owner.name, ownerEmail: business.owner.email,
+    phone: business.owner.phone, city: business.city, address: business.address, gstin: business.gstin || '', plan: business.plan,
+  } : null)
+
+  const [branchForm, setBranchForm] = useState(() => branch ? {
+    phone: branch.phone, address: branch.address, hours: branch.hours, onlineBooking: branch.onlineBooking,
+  } : null)
 
   const [notifications, setNotifications] = useState({
     appointmentReminders: true, newBookings: true, cancellations: true,
@@ -24,64 +44,110 @@ export default function SettingsPage() {
   })
 
   const [security, setSecurity] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
-  const [pwError, setPwError] = useState('')
+  const [error, setError] = useState('')
+
+  const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2000) }
 
   const handleSave = () => {
+    setError('')
+    if (tab === 'business') {
+      if (!profile.name.trim()) { setError('Business name is required'); return }
+      if (!/^\d{10}$/.test(profile.phone)) { setError('Phone must be a 10-digit number'); return }
+      updateBusiness(business.id, profile)
+    }
+    if (tab === 'branch') {
+      if (!/^\d{10}$/.test(branchForm.phone)) { setError('Phone must be a 10-digit number'); return }
+      updateBranch(business.id, branch.id, branchForm)
+    }
     if (tab === 'security') {
-      if (!security.currentPassword) { setPwError('Enter current password'); return }
-      if (security.newPassword.length < 8) { setPwError('New password must be 8+ characters'); return }
-      if (security.newPassword !== security.confirmPassword) { setPwError('Passwords do not match'); return }
-      setPwError('')
+      if (!security.currentPassword) { setError('Enter current password'); return }
+      if (security.newPassword.length < 8) { setError('New password must be 8+ characters'); return }
+      if (security.newPassword !== security.confirmPassword) { setError('Passwords do not match'); return }
       setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' })
     }
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    flash()
   }
 
   return (
     <div className="space-y-6 max-w-3xl">
       <div className="flex gap-2 flex-wrap">
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${tab === t.id ? 'bg-violet-600 text-white' : 'glass text-gray-400 hover:text-white'}`}>
-            <t.icon size={15} /> {t.label}
-          </button>
-        ))}
+        {tabs.map(id => {
+          const t = TABS[id]
+          return (
+            <button key={id} onClick={() => { setTab(id); setError('') }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${tab === id ? 'bg-violet-600 text-white' : 'glass text-fg-2 hover:text-fg'}`}>
+              <t.icon size={15} /> {t.label}
+            </button>
+          )
+        })}
       </div>
 
       <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl p-6 space-y-5">
+        className="glass rounded-2xl p-4 sm:p-6 space-y-5">
 
         {tab === 'business' && (
           <>
-            <h3 className="font-bold text-white">Business Information</h3>
+            <h3 className="font-bold text-fg">Business Information</h3>
             <div className="grid md:grid-cols-2 gap-4">
               {[
-                { key: 'name', label: 'Business Name' },
-                { key: 'type', label: 'Business Type' },
-                { key: 'email', label: 'Email Address' },
-                { key: 'phone', label: 'Phone Number' },
-                { key: 'gst', label: 'GST Number' },
-                { key: 'currency', label: 'Currency' },
-              ].map(f => (
-                <div key={f.key}>
-                  <label className="text-sm text-gray-400 block mb-1">{f.label}</label>
-                  <input value={business[f.key]} onChange={e => setBusiness({ ...business, [f.key]: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 transition-colors" />
-                </div>
+                ['name', 'Business Name'], ['ownerName', 'Owner Name'], ['ownerEmail', 'Email Address'],
+                ['phone', 'Phone Number'], ['city', 'City'], ['gstin', 'GST Number'],
+              ].map(([key, label]) => (
+                <label key={key} className="block">
+                  <span className="text-sm text-fg-2 block mb-1">{label}</span>
+                  <input value={profile[key]} onChange={e => setProfile({ ...profile, [key]: key === 'gstin' ? e.target.value.toUpperCase() : e.target.value })}
+                    className={inputCls} />
+                </label>
               ))}
+              <label className="block">
+                <span className="text-sm text-fg-2 block mb-1">Business Type</span>
+                <select value={profile.type} onChange={e => setProfile({ ...profile, type: e.target.value })} className={inputCls}>
+                  {BIZ_TYPES.map(t => <option key={t}>{t}</option>)}
+                </select>
+              </label>
             </div>
+            <label className="block">
+              <span className="text-sm text-fg-2 block mb-1">Head Office Address</span>
+              <textarea value={profile.address} onChange={e => setProfile({ ...profile, address: e.target.value })}
+                rows={2} className={`${inputCls} resize-none`} />
+            </label>
+          </>
+        )}
+
+        {tab === 'branch' && (
+          <>
             <div>
-              <label className="text-sm text-gray-400 block mb-1">Address</label>
-              <textarea value={business.address} onChange={e => setBusiness({ ...business, address: e.target.value })}
-                rows={2} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 resize-none" />
+              <h3 className="font-bold text-fg">{business.name} · {branch.name}</h3>
+              <p className="text-fg-muted text-xs mt-0.5">Only this branch is affected. Business-wide settings are managed by the owner.</p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-sm text-fg-2 block mb-1">Branch Phone</span>
+                <input value={branchForm.phone} onChange={e => setBranchForm({ ...branchForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })} className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="text-sm text-fg-2 block mb-1">Opening Hours</span>
+                <input value={branchForm.hours} onChange={e => setBranchForm({ ...branchForm, hours: e.target.value })} className={inputCls} />
+              </label>
+            </div>
+            <label className="block">
+              <span className="text-sm text-fg-2 block mb-1">Address</span>
+              <textarea value={branchForm.address} onChange={e => setBranchForm({ ...branchForm, address: e.target.value })}
+                rows={2} className={`${inputCls} resize-none`} />
+            </label>
+            <div className="flex items-center justify-between py-3 border-t border-line">
+              <div>
+                <p className="text-fg text-sm font-medium">Online booking</p>
+                <p className="text-fg-muted text-xs">Customers can book this branch from the website and WhatsApp</p>
+              </div>
+              <Toggle checked={branchForm.onlineBooking} onChange={v => setBranchForm({ ...branchForm, onlineBooking: v })} label="Online booking" />
             </div>
           </>
         )}
 
         {tab === 'notifications' && (
           <>
-            <h3 className="font-bold text-white">Notification Preferences</h3>
+            <h3 className="font-bold text-fg">Notification Preferences</h3>
             <div className="space-y-4">
               {[
                 { key: 'appointmentReminders', label: 'Appointment Reminders', desc: 'Send reminders to customers before appointments' },
@@ -91,15 +157,12 @@ export default function SettingsPage() {
                 { key: 'dailySummary', label: 'Daily Summary', desc: 'Receive end-of-day business summary' },
                 { key: 'weeklySummary', label: 'Weekly Report', desc: 'Receive weekly performance report' },
               ].map(n => (
-                <div key={n.key} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+                <div key={n.key} className="flex items-center justify-between gap-4 py-3 border-b border-line last:border-0">
                   <div>
-                    <p className="text-white text-sm font-medium">{n.label}</p>
-                    <p className="text-gray-500 text-xs">{n.desc}</p>
+                    <p className="text-fg text-sm font-medium">{n.label}</p>
+                    <p className="text-fg-muted text-xs">{n.desc}</p>
                   </div>
-                  <button onClick={() => setNotifications({ ...notifications, [n.key]: !notifications[n.key] })}
-                    className={`w-11 h-6 rounded-full transition-all relative ${notifications[n.key] ? 'bg-violet-600' : 'bg-white/10'}`}>
-                    <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${notifications[n.key] ? 'left-6' : 'left-1'}`} />
-                  </button>
+                  <Toggle checked={notifications[n.key]} onChange={v => setNotifications({ ...notifications, [n.key]: v })} label={n.label} />
                 </div>
               ))}
             </div>
@@ -108,25 +171,25 @@ export default function SettingsPage() {
 
         {tab === 'security' && (
           <>
-            <h3 className="font-bold text-white">Change Password</h3>
+            <h3 className="font-bold text-fg">Change Password</h3>
             <div className="space-y-4">
               {[
                 { key: 'currentPassword', label: 'Current Password' },
                 { key: 'newPassword', label: 'New Password' },
                 { key: 'confirmPassword', label: 'Confirm New Password' },
               ].map(f => (
-                <div key={f.key}>
-                  <label className="text-sm text-gray-400 block mb-1">{f.label}</label>
-                  <input type="password" value={security[f.key]}
-                    onChange={e => { setSecurity({ ...security, [f.key]: e.target.value }); setPwError('') }}
-                    placeholder="••••••••"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-violet-500 transition-colors" />
-                </div>
+                <label key={f.key} className="block">
+                  <span className="text-sm text-fg-2 block mb-1">{f.label}</span>
+                  <input type="password" value={security[f.key]} placeholder="••••••••"
+                    onChange={e => { setSecurity({ ...security, [f.key]: e.target.value }); setError('') }}
+                    className={inputCls} />
+                </label>
               ))}
-              {pwError && <p className="text-red-400 text-sm">{pwError}</p>}
             </div>
           </>
         )}
+
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <div className="pt-2">
           <button onClick={handleSave}

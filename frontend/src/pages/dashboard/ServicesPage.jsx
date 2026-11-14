@@ -52,12 +52,12 @@ export default function ServicesPage() {
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => setFilterCat('all')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filterCat === 'all' ? 'bg-violet-600 text-white' : 'glass text-gray-400 hover:text-white'}`}>
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filterCat === 'all' ? 'bg-violet-600 text-white' : 'glass text-fg-2 hover:text-fg'}`}>
             All
           </button>
           {categories.map(c => (
             <button key={c} onClick={() => setFilterCat(c)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filterCat === c ? 'bg-violet-600 text-white' : 'glass text-gray-400 hover:text-white'}`}>
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filterCat === c ? 'bg-violet-600 text-white' : 'glass text-fg-2 hover:text-fg'}`}>
               {c}
             </button>
           ))}
@@ -75,16 +75,16 @@ export default function ServicesPage() {
             <div className="flex items-start justify-between mb-3">
               <div>
                 <span className="text-violet-400 text-xs font-medium">{s.category}</span>
-                <h3 className="font-semibold text-white mt-0.5">{s.name}</h3>
+                <h3 className="font-semibold text-fg mt-0.5">{s.name}</h3>
               </div>
               <button onClick={() => toggleActive(s.id)}
-                className={`text-xs px-2 py-1 rounded-full transition-all ${s.active ? 'bg-green-500/15 text-green-400' : 'bg-gray-500/15 text-gray-400'}`}>
+                className={`text-xs px-2 py-1 rounded-full transition-all ${s.active ? 'bg-green-500/15 text-green-400' : 'bg-gray-500/15 text-fg-2'}`}>
                 {s.active ? 'Active' : 'Inactive'}
               </button>
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-400">
+            <div className="flex items-center gap-4 text-sm text-fg-2">
               <span className="flex items-center gap-1"><Clock size={13} /> {s.duration} min</span>
-              <span className="text-white font-bold text-base">₹{s.price.toLocaleString()}</span>
+              <span className="text-fg font-bold text-base">₹{s.price.toLocaleString()}</span>
             </div>
           </motion.div>
         ))}
@@ -93,44 +93,44 @@ export default function ServicesPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-            className="bg-[#13131a] border border-white/10 rounded-2xl p-6 w-full max-w-md">
+            className="bg-panel border border-line rounded-2xl p-5 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-white">Add Service</h2>
-              <button onClick={() => { setShowModal(false); setErrors({}) }} className="text-gray-400 hover:text-white"><X size={20} /></button>
+              <h2 className="text-lg font-bold text-fg">Add Service</h2>
+              <button onClick={() => { setShowModal(false); setErrors({}) }} className="text-fg-2 hover:text-fg"><X size={20} /></button>
             </div>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label className="text-sm text-gray-400 block mb-1">Service Name</label>
+                <label className="text-sm text-fg-2 block mb-1">Service Name</label>
                 <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="e.g. Deep Conditioning"
-                  className={`w-full bg-white/5 border ${errors.name ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-violet-500`} />
+                  className={`w-full bg-fg/5 border ${errors.name ? 'border-red-500' : 'border-line'} rounded-xl px-4 py-2.5 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-violet-500`} />
                 {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
               </div>
               <div>
-                <label className="text-sm text-gray-400 block mb-1">Category</label>
+                <label className="text-sm text-fg-2 block mb-1">Category</label>
                 <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
-                  className={`w-full bg-white/5 border ${errors.category ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500`}>
-                  <option value="" className="bg-[#13131a]">Select category</option>
-                  {categories.map(c => <option key={c} value={c} className="bg-[#13131a]">{c}</option>)}
+                  className={`w-full bg-fg/5 border ${errors.category ? 'border-red-500' : 'border-line'} rounded-xl px-4 py-2.5 text-fg text-sm focus:outline-none focus:border-violet-500`}>
+                  <option value="" className="bg-panel">Select category</option>
+                  {categories.map(c => <option key={c} value={c} className="bg-panel">{c}</option>)}
                 </select>
                 {errors.category && <p className="text-red-400 text-xs mt-1">{errors.category}</p>}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm text-gray-400 block mb-1">Duration (mins)</label>
+                  <label className="text-sm text-fg-2 block mb-1">Duration (mins)</label>
                   <input type="number" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} placeholder="60"
-                    className={`w-full bg-white/5 border ${errors.duration ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500`} />
+                    className={`w-full bg-fg/5 border ${errors.duration ? 'border-red-500' : 'border-line'} rounded-xl px-4 py-2.5 text-fg text-sm focus:outline-none focus:border-violet-500`} />
                   {errors.duration && <p className="text-red-400 text-xs mt-1">{errors.duration}</p>}
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400 block mb-1">Price (₹)</label>
+                  <label className="text-sm text-fg-2 block mb-1">Price (₹)</label>
                   <input type="number" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="1000"
-                    className={`w-full bg-white/5 border ${errors.price ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500`} />
+                    className={`w-full bg-fg/5 border ${errors.price ? 'border-red-500' : 'border-line'} rounded-xl px-4 py-2.5 text-fg text-sm focus:outline-none focus:border-violet-500`} />
                   {errors.price && <p className="text-red-400 text-xs mt-1">{errors.price}</p>}
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowModal(false); setErrors({}) }}
-                  className="flex-1 glass py-2.5 rounded-xl text-gray-300 text-sm font-medium">Cancel</button>
+                  className="flex-1 glass py-2.5 rounded-xl text-fg-2 text-sm font-medium">Cancel</button>
                 <button type="submit"
                   className="flex-1 bg-violet-600 hover:bg-violet-700 text-white py-2.5 rounded-xl text-sm font-medium">Add Service</button>
               </div>

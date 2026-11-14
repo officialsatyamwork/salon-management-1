@@ -34,8 +34,8 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
     return (
       <div className="glass rounded-lg px-3 py-2 text-sm">
-        <p className="text-gray-400">{label}</p>
-        <p className="text-white font-semibold">₹{payload[0].value.toLocaleString()}</p>
+        <p className="text-fg-2">{label}</p>
+        <p className="text-fg font-semibold">₹{payload[0].value.toLocaleString()}</p>
       </div>
     )
   }
@@ -62,8 +62,8 @@ export default function ReportsPage() {
                 </div>
                 <span className="text-green-400 text-xs">{s.change}</span>
               </div>
-              <p className="text-2xl font-black text-white">{s.value}</p>
-              <p className="text-gray-400 text-sm">{s.label}</p>
+              <p className="text-2xl font-black text-fg">{s.value}</p>
+              <p className="text-fg-2 text-sm">{s.label}</p>
             </div>
           ))}
         </div>
@@ -71,16 +71,16 @@ export default function ReportsPage() {
 
       {/* Revenue Trend */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-6">
+        className="glass rounded-2xl p-4 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
-            <h3 className="font-bold text-white">Revenue Trend</h3>
-            <p className="text-gray-400 text-sm">Last 6 months</p>
+            <h3 className="font-bold text-fg">Revenue Trend</h3>
+            <p className="text-fg-2 text-sm">Last 6 months</p>
           </div>
           <div className="flex gap-2">
             {['3m', '6m', '1y'].map(r => (
               <button key={r} onClick={() => setRange(r)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${range === r ? 'bg-violet-600 text-white' : 'glass text-gray-400'}`}>
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${range === r ? 'bg-violet-600 text-white' : 'glass text-fg-2'}`}>
                 {r}
               </button>
             ))}
@@ -105,16 +105,16 @@ export default function ReportsPage() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Service Revenue */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="glass rounded-2xl p-6">
-          <h3 className="font-bold text-white mb-1">Revenue by Service</h3>
-          <p className="text-gray-400 text-sm mb-6">This month</p>
+          className="glass rounded-2xl p-4 sm:p-6">
+          <h3 className="font-bold text-fg mb-1">Revenue by Service</h3>
+          <p className="text-fg-2 text-sm mb-6">This month</p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={serviceRevenue} layout="vertical">
               <XAxis type="number" hide />
               <YAxis dataKey="name" type="category" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} width={70} />
               <Tooltip content={({ active, payload }) => active && payload?.length ? (
                 <div className="glass rounded-lg px-3 py-2 text-sm">
-                  <p className="text-white font-semibold">₹{payload[0].value.toLocaleString()}</p>
+                  <p className="text-fg font-semibold">₹{payload[0].value.toLocaleString()}</p>
                 </div>
               ) : null} />
               <Bar dataKey="revenue" fill="#6C3FC5" radius={[0, 4, 4, 0]} />
@@ -124,9 +124,9 @@ export default function ReportsPage() {
 
         {/* Payment Mix */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="glass rounded-2xl p-6">
-          <h3 className="font-bold text-white mb-1">Payment Methods</h3>
-          <p className="text-gray-400 text-sm mb-4">Distribution this month</p>
+          className="glass rounded-2xl p-4 sm:p-6">
+          <h3 className="font-bold text-fg mb-1">Payment Methods</h3>
+          <p className="text-fg-2 text-sm mb-4">Distribution this month</p>
           <div className="flex items-center gap-6">
             <ResponsiveContainer width="50%" height={160}>
               <PieChart>
@@ -139,8 +139,8 @@ export default function ReportsPage() {
               {paymentMix.map((p, i) => (
                 <div key={p.name} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ background: PIE_COLORS[i] }} />
-                  <span className="text-gray-300 text-sm">{p.name}</span>
-                  <span className="text-white font-semibold text-sm ml-auto">{p.value}%</span>
+                  <span className="text-fg-2 text-sm">{p.name}</span>
+                  <span className="text-fg font-semibold text-sm ml-auto">{p.value}%</span>
                 </div>
               ))}
             </div>
@@ -150,32 +150,32 @@ export default function ReportsPage() {
 
       {/* Staff Performance */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="glass rounded-2xl p-6">
-        <h3 className="font-bold text-white mb-6">Staff Performance</h3>
+        className="glass rounded-2xl p-4 sm:p-6">
+        <h3 className="font-bold text-fg mb-6">Staff Performance</h3>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[640px] whitespace-nowrap">
             <thead>
-              <tr className="border-b border-white/8 text-left text-xs text-gray-500 uppercase tracking-wider">
+              <tr className="border-b border-line text-left text-xs text-fg-muted uppercase tracking-wider">
                 <th className="pb-3 pr-6">Staff Member</th>
                 <th className="pb-3 pr-6">Appointments</th>
                 <th className="pb-3 pr-6">Revenue Generated</th>
                 <th className="pb-3">Avg per Appointment</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-line">
               {staffPerformance.map(s => (
-                <tr key={s.name} className="hover:bg-white/2 transition-colors">
+                <tr key={s.name} className="hover:bg-fg/[0.03] transition-colors">
                   <td className="py-3 pr-6">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-violet-600/20 flex items-center justify-center text-violet-400 font-bold text-sm">
                         {s.name[0]}
                       </div>
-                      <span className="text-white text-sm font-medium">{s.name}</span>
+                      <span className="text-fg text-sm font-medium">{s.name}</span>
                     </div>
                   </td>
-                  <td className="py-3 pr-6 text-gray-300 text-sm">{s.appointments}</td>
-                  <td className="py-3 pr-6 text-white font-semibold text-sm">₹{s.revenue.toLocaleString()}</td>
-                  <td className="py-3 text-gray-300 text-sm">₹{Math.round(s.revenue / s.appointments).toLocaleString()}</td>
+                  <td className="py-3 pr-6 text-fg-2 text-sm">{s.appointments}</td>
+                  <td className="py-3 pr-6 text-fg font-semibold text-sm">₹{s.revenue.toLocaleString()}</td>
+                  <td className="py-3 text-fg-2 text-sm">₹{Math.round(s.revenue / s.appointments).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

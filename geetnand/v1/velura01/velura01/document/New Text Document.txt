@@ -1,0 +1,17 @@
+The current theme is dark — deep rose/burgundy backgrounds:
+
+--bg: #0f0810 (very dark purple-black)
+
+--bg-2: #180d16 (slightly lighter dark)
+
+Text: #f5eef2 (off-white)
+
+Brand accent: #c0496a (rose/pink)
+
+The light theme switches to soft blush/cream:
+
+--bg: #fdf6f8 (warm white)
+
+--bg-2: #f7edf1 (light blush)
+
+Text: #1a0810 (near black)
